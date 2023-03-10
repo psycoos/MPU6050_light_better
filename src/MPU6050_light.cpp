@@ -195,7 +195,7 @@ void MPU6050::update(){
   // estimate tilt angles: this is an approximation for small angles!
   float sgZ = accZ<0 ? -1 : 1; // allow one angle to go from -180 to +180 degrees
   angleAccX =   atan2(accY, sgZ*sqrt(accZ*accZ + accX*accX)) * RAD_2_DEG; // [-180,+180] deg
-  angleAccY = - atan2(accX,     sqrt(accZ*accZ + accY*accY)) * RAD_2_DEG; // [- 90,+ 90] deg
+  angleAccY = - atan2(accX, sgZ*sqrt(accZ*accZ + accY*accY)) * RAD_2_DEG; // [- 90,+ 90] deg //also 180 degrees now
 
   unsigned long Tnew = millis();
   float dt = (Tnew - preInterval) * 1e-3;
@@ -204,7 +204,7 @@ void MPU6050::update(){
   // Correctly wrap X and Y angles (special thanks to Edgar Bonet!)
   // https://github.com/gabriel-milan/TinyMPU6050/issues/6
   angleX = wrap(filterGyroCoef*(angleAccX + wrap(angleX +     gyroX*dt - angleAccX,180)) + (1.0-filterGyroCoef)*angleAccX,180);
-  angleY = wrap(filterGyroCoef*(angleAccY + wrap(angleY + sgZ*gyroY*dt - angleAccY, 90)) + (1.0-filterGyroCoef)*angleAccY, 90);
+  angleY = wrap(filterGyroCoef*(angleAccY + wrap(angleY +     gyroY*dt - angleAccY,180)) + (1.0-filterGyroCoef)*angleAccY, 180);
   angleZ += gyroZ*dt; // not wrapped
 
 }
